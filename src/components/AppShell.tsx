@@ -90,10 +90,11 @@ export function AppShell({ children }: { children: ReactNode }) {
     label,
     icon: Icon,
   }: {
-    to: string;
+    to: NavTo;
     label: string;
     icon: typeof LayoutDashboard;
   }) {
+
     const active = pathname === to || pathname.startsWith(`${to}/`);
     return (
       <Link
