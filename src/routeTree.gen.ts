@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedContactsRouteImport } from './routes/_authenticated/contacts'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRequestsRouteImport } from './routes/_authenticated/requests'
 import { Route as AuthenticatedClientsIndexRouteImport } from './routes/_authenticated/clients.index'
 import { Route as AuthenticatedClientsIdRouteImport } from './routes/_authenticated/clients.$id'
 
@@ -47,6 +48,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRequestsRoute = AuthenticatedRequestsRouteImport.update({
+  id: '/requests',
+  path: '/requests',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedClientsIndexRoute =
   AuthenticatedClientsIndexRouteImport.update({
     id: '/clients/',
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/contacts': typeof AuthenticatedContactsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/requests': typeof AuthenticatedRequestsRoute
   '/clients/$id': typeof AuthenticatedClientsIdRoute
   '/clients/': typeof AuthenticatedClientsIndexRoute
 }
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/contacts': typeof AuthenticatedContactsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/requests': typeof AuthenticatedRequestsRoute
   '/clients/$id': typeof AuthenticatedClientsIdRoute
   '/clients': typeof AuthenticatedClientsIndexRoute
 }
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/contacts': typeof AuthenticatedContactsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/requests': typeof AuthenticatedRequestsRoute
   '/_authenticated/clients/$id': typeof AuthenticatedClientsIdRoute
   '/_authenticated/clients/': typeof AuthenticatedClientsIndexRoute
 }
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/contacts'
     | '/dashboard'
+    | '/requests'
     | '/clients/$id'
     | '/clients/'
   fileRoutesByTo: FileRoutesByTo
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/contacts'
     | '/dashboard'
+    | '/requests'
     | '/clients/$id'
     | '/clients'
   id:
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/_authenticated/calendar'
     | '/_authenticated/contacts'
     | '/_authenticated/dashboard'
+    | '/_authenticated/requests'
     | '/_authenticated/clients/$id'
     | '/_authenticated/clients/'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/requests': {
+      id: '/_authenticated/requests'
+      path: '/requests'
+      fullPath: '/requests'
+      preLoaderRoute: typeof AuthenticatedRequestsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/clients/': {
       id: '/_authenticated/clients/'
       path: '/clients'
@@ -190,6 +209,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedContactsRoute: typeof AuthenticatedContactsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedRequestsRoute: typeof AuthenticatedRequestsRoute
   AuthenticatedClientsIdRoute: typeof AuthenticatedClientsIdRoute
   AuthenticatedClientsIndexRoute: typeof AuthenticatedClientsIndexRoute
 }
@@ -198,6 +218,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedContactsRoute: AuthenticatedContactsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedRequestsRoute: AuthenticatedRequestsRoute,
   AuthenticatedClientsIdRoute: AuthenticatedClientsIdRoute,
   AuthenticatedClientsIndexRoute: AuthenticatedClientsIndexRoute,
 }
