@@ -84,7 +84,7 @@ export function QuickCapture({
             <Panel title="Summary">
               <p className="text-sm">{result.summary || "—"}</p>
               <p className="mt-2 text-xs text-muted-foreground">
-                Client: {matched?.name ?? result.company_guess || "unmatched"}
+                Client: {matched?.name ?? (result.company_guess || "unmatched")}
                 {result.client_need ? ` · Need: ${result.client_need}` : ""}
               </p>
             </Panel>
