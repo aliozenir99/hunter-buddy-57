@@ -105,7 +105,9 @@ function Assistant() {
                 .join("; ") || "none"),
           ].join("\n")
         : snapshot;
-      const r = await draft({ data: { context, instruction, previous: email?.body } });
+      const r = await draft({
+        data: { context, instruction, ...(email?.body ? { previous: email.body } : {}) },
+      });
       setEmail(r);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Draft failed");

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -174,8 +175,7 @@ export interface EmailDraft {
 }
 
 async function selectAll<T>(table: string, order: string, ascending = true): Promise<T[]> {
-  const { data, error } = await supabase
-    .from(table)
+  const { data, error } = await (supabase.from as any)(table)
     .select("*")
     .order(order, { ascending });
   if (error) throw error;
@@ -242,8 +242,7 @@ export function useUpsert(table: string, label = "Saved") {
     mutationFn: async (values: Row & { id?: string }) => {
       const { id, ...rest } = values;
       if (id) {
-        const { data, error } = await supabase
-          .from(table)
+        const { data, error } = await (supabase.from as any)(table)
           .update(rest)
           .eq("id", id)
           .select()
@@ -251,7 +250,7 @@ export function useUpsert(table: string, label = "Saved") {
         if (error) throw error;
         return data;
       }
-      const { data, error } = await supabase.from(table).insert(rest).select().single();
+      const { data, error } = await (supabase.from as any)(table).insert(rest).select().single();
       if (error) throw error;
       return data;
     },
@@ -267,7 +266,7 @@ export function useRemove(table: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from(table).delete().eq("id", id);
+      const { error } = await (supabase.from as any)(table).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
