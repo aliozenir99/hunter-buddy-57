@@ -44,6 +44,12 @@ const SYSTEM = [
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
+type NavTo =
+  | (typeof WORKSPACE)[number]["to"]
+  | (typeof PIPELINE)[number]["to"]
+  | (typeof SYSTEM)[number]["to"];
+
+
 export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
