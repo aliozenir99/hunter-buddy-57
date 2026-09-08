@@ -17,7 +17,7 @@ export type Database = {
       account_managers: {
         Row: {
           created_at: string
-          created_by: string | null
+          created_by: string
           department: string | null
           email: string | null
           id: string
@@ -27,7 +27,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           department?: string | null
           email?: string | null
           id?: string
@@ -37,7 +37,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           department?: string | null
           email?: string | null
           id?: string
@@ -54,7 +54,7 @@ export type Database = {
           company_id: string | null
           contact_id: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           duration_minutes: number | null
           id: string
           meeting_id: string | null
@@ -68,7 +68,7 @@ export type Database = {
           company_id?: string | null
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           duration_minutes?: number | null
           id?: string
           meeting_id?: string | null
@@ -82,7 +82,7 @@ export type Database = {
           company_id?: string | null
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           duration_minutes?: number | null
           id?: string
           meeting_id?: string | null
@@ -123,7 +123,7 @@ export type Database = {
           company_type: string | null
           country: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           engagement: string | null
           id: string
           important_notes: string | null
@@ -148,7 +148,7 @@ export type Database = {
           company_type?: string | null
           country?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           engagement?: string | null
           id?: string
           important_notes?: string | null
@@ -173,7 +173,7 @@ export type Database = {
           company_type?: string | null
           country?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           engagement?: string | null
           id?: string
           important_notes?: string | null
@@ -204,7 +204,7 @@ export type Database = {
         Row: {
           company_id: string
           created_at: string
-          created_by: string | null
+          created_by: string
           email: string | null
           full_name: string
           id: string
@@ -220,7 +220,7 @@ export type Database = {
         Insert: {
           company_id: string
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           email?: string | null
           full_name: string
           id?: string
@@ -236,7 +236,7 @@ export type Database = {
         Update: {
           company_id?: string
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           email?: string | null
           full_name?: string
           id?: string
@@ -264,7 +264,7 @@ export type Database = {
           body: string
           company_id: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           id: string
           language: string | null
           request_id: string | null
@@ -276,7 +276,7 @@ export type Database = {
           body: string
           company_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           id?: string
           language?: string | null
           request_id?: string | null
@@ -288,7 +288,7 @@ export type Database = {
           body?: string
           company_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           id?: string
           language?: string | null
           request_id?: string | null
@@ -317,7 +317,7 @@ export type Database = {
         Row: {
           company_id: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           due_date: string
           id: string
           meeting_id: string | null
@@ -332,7 +332,7 @@ export type Database = {
         Insert: {
           company_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           due_date?: string
           id?: string
           meeting_id?: string | null
@@ -347,7 +347,7 @@ export type Database = {
         Update: {
           company_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           due_date?: string
           id?: string
           meeting_id?: string | null
@@ -393,7 +393,7 @@ export type Database = {
           competitors: string | null
           concerns: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           decision_maker: string | null
           handover_date: string | null
           id: string
@@ -416,7 +416,7 @@ export type Database = {
           competitors?: string | null
           concerns?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           decision_maker?: string | null
           handover_date?: string | null
           id?: string
@@ -439,7 +439,7 @@ export type Database = {
           competitors?: string | null
           concerns?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           decision_maker?: string | null
           handover_date?: string | null
           id?: string
@@ -485,7 +485,7 @@ export type Database = {
           competitors: string | null
           contact_id: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           decision_maker: string | null
           discussion: string | null
           id: string
@@ -512,7 +512,7 @@ export type Database = {
           competitors?: string | null
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           decision_maker?: string | null
           discussion?: string | null
           id?: string
@@ -539,7 +539,7 @@ export type Database = {
           competitors?: string | null
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           decision_maker?: string | null
           discussion?: string | null
           id?: string
@@ -582,7 +582,7 @@ export type Database = {
           company_id: string
           contact_id: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           estimated_value: number | null
           expected_decision_date: string | null
           handover_date: string | null
@@ -601,7 +601,7 @@ export type Database = {
           company_id: string
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           estimated_value?: number | null
           expected_decision_date?: string | null
           handover_date?: string | null
@@ -620,7 +620,7 @@ export type Database = {
           company_id?: string
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           estimated_value?: number | null
           expected_decision_date?: string | null
           handover_date?: string | null
@@ -692,7 +692,7 @@ export type Database = {
           conference_room: string | null
           contact_id: string | null
           created_at: string
-          created_by: string | null
+          created_by: string
           deadline: string | null
           details: string | null
           event_date: string | null
@@ -718,7 +718,7 @@ export type Database = {
           conference_room?: string | null
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           deadline?: string | null
           details?: string | null
           event_date?: string | null
@@ -744,7 +744,7 @@ export type Database = {
           conference_room?: string | null
           contact_id?: string | null
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           deadline?: string | null
           details?: string | null
           event_date?: string | null
