@@ -5,8 +5,23 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Empty, PageHeader, Panel, Pill, RecordDialog, type FieldSpec } from "@/components/cockpit";
-import { useCompanies, useContacts, useMeetings, useUpsert, type Meeting } from "@/lib/api";
+import {
+  DeleteButton,
+  Empty,
+  PageHeader,
+  Panel,
+  Pill,
+  RecordDialog,
+  type FieldSpec,
+} from "@/components/cockpit";
+import {
+  useCompanies,
+  useContacts,
+  useMeetings,
+  useRemove,
+  useUpsert,
+  type Meeting,
+} from "@/lib/api";
 import { formatDate, formatTime, MEETING_TYPES, todayISO } from "@/lib/crm";
 import { smartSummarise } from "@/lib/ai.functions";
 
