@@ -227,6 +227,29 @@ export function RecordDialog({
                     ))}
                   </select>
                 )}
+                {type === "multiselect" && (
+                  <div className="flex flex-wrap gap-2">
+                    {options.map((o) => {
+                      const list = Array.isArray(value) ? (value as string[]) : [];
+                      const on = list.includes(o.value);
+                      return (
+                        <button
+                          key={o.value}
+                          type="button"
+                          onClick={() =>
+                            set(
+                              f.name,
+                              on ? list.filter((x) => x !== o.value) : [...list, o.value],
+                            )
+                          }
+                          className={`rounded-sm border px-2 py-1 text-xs ${on ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {type === "checkbox" && (
                   <div className="flex h-9 items-center">
                     <Checkbox
