@@ -40,6 +40,7 @@ function Requests() {
   const { data: contacts = [] } = useContacts();
   const { data: managers = [] } = useAccountManagers();
   const save = useUpsert("requests", "Request saved");
+  const remove = useRemove("requests");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<RequestRow | null>(null);
   const [status, setStatus] = useState("");
@@ -142,6 +143,7 @@ function Requests() {
                 >
                   {r.status}
                 </Pill>
+                <DeleteButton name={r.title} onConfirm={() => remove.mutate(r.id)} />
               </li>
             ))}
           </ul>
@@ -162,6 +164,12 @@ function Requests() {
         }
         pending={save.isPending}
         onSubmit={(v) => save.mutate(v, { onSuccess: () => setOpen(false) })}
+        deleteName={editing?.title}
+        onDelete={
+          editing
+            ? () => remove.mutate(editing.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
       />
     </>
   );
