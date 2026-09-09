@@ -2,11 +2,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Empty, PageHeader, Panel, Pill, RecordDialog, type FieldSpec } from "@/components/cockpit";
+import {
+  DeleteButton,
+  Empty,
+  PageHeader,
+  Panel,
+  Pill,
+  RecordDialog,
+  type FieldSpec,
+} from "@/components/cockpit";
 import {
   useAccountManagers,
   useCompanies,
   useContacts,
+  useRemove,
   useRequests,
   useUpsert,
   type RequestRow,
