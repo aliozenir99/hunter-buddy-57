@@ -149,6 +149,8 @@ export function RecordDialog({
   initial,
   onSubmit,
   pending,
+  onDelete,
+  deleteName,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -158,7 +160,10 @@ export function RecordDialog({
   initial?: RecordValues;
   onSubmit: (values: RecordValues) => void;
   pending?: boolean;
+  onDelete?: () => void;
+  deleteName?: string;
 }) {
+  const [confirm, setConfirm] = useState(false);
   const [values, setValues] = useState<RecordValues>(initial ?? {});
 
   useEffect(() => {
