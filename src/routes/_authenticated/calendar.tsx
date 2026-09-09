@@ -42,6 +42,7 @@ function CalendarPage() {
   const { data: companies = [] } = useCompanies();
   const { data: contacts = [] } = useContacts();
   const save = useUpsert("meetings", "Meeting saved");
+  const remove = useRemove("meetings");
   const summarise = useServerFn(smartSummarise);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Meeting | null>(null);
@@ -121,6 +122,10 @@ function CalendarPage() {
             <Pill tone={m.is_completed ? "done" : "today"}>
               {m.is_completed ? "Logged" : "Planned"}
             </Pill>
+            <DeleteButton
+              name={`the meeting with ${companyName(m.company_id)}`}
+              onConfirm={() => remove.mutate(m.id)}
+            />
           </li>
         ))}
       </ul>
@@ -178,6 +183,12 @@ function CalendarPage() {
         }
         pending={save.isPending}
         onSubmit={(v) => save.mutate(v, { onSuccess: () => setOpen(false) })}
+        deleteName={editing?.id ? "this meeting" : undefined}
+        onDelete={
+          editing?.id
+            ? () => remove.mutate(editing.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
       />
     </>
   );
