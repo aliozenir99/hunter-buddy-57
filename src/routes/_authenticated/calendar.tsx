@@ -5,8 +5,23 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Empty, PageHeader, Panel, Pill, RecordDialog, type FieldSpec } from "@/components/cockpit";
-import { useCompanies, useContacts, useMeetings, useUpsert, type Meeting } from "@/lib/api";
+import {
+  DeleteButton,
+  Empty,
+  PageHeader,
+  Panel,
+  Pill,
+  RecordDialog,
+  type FieldSpec,
+} from "@/components/cockpit";
+import {
+  useCompanies,
+  useContacts,
+  useMeetings,
+  useRemove,
+  useUpsert,
+  type Meeting,
+} from "@/lib/api";
 import { formatDate, formatTime, MEETING_TYPES, todayISO } from "@/lib/crm";
 import { smartSummarise } from "@/lib/ai.functions";
 
@@ -27,6 +42,7 @@ function CalendarPage() {
   const { data: companies = [] } = useCompanies();
   const { data: contacts = [] } = useContacts();
   const save = useUpsert("meetings", "Meeting saved");
+  const remove = useRemove("meetings");
   const summarise = useServerFn(smartSummarise);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Meeting | null>(null);
@@ -106,6 +122,10 @@ function CalendarPage() {
             <Pill tone={m.is_completed ? "done" : "today"}>
               {m.is_completed ? "Logged" : "Planned"}
             </Pill>
+            <DeleteButton
+              name={`the meeting with ${companyName(m.company_id)}`}
+              onConfirm={() => remove.mutate(m.id)}
+            />
           </li>
         ))}
       </ul>
@@ -163,6 +183,12 @@ function CalendarPage() {
         }
         pending={save.isPending}
         onSubmit={(v) => save.mutate(v, { onSuccess: () => setOpen(false) })}
+        deleteName={editing?.id ? "this meeting" : undefined}
+        onDelete={
+          editing?.id
+            ? () => remove.mutate(editing.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
       />
     </>
   );

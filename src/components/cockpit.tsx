@@ -1,4 +1,15 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -126,6 +137,7 @@ export type FieldType =
   | "date"
   | "time"
   | "select"
+  | "multiselect"
   | "checkbox";
 
 export interface FieldSpec {
@@ -148,6 +160,8 @@ export function RecordDialog({
   initial,
   onSubmit,
   pending,
+  onDelete,
+  deleteName,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
@@ -157,7 +171,10 @@ export function RecordDialog({
   initial?: RecordValues;
   onSubmit: (values: RecordValues) => void;
   pending?: boolean;
+  onDelete?: () => void;
+  deleteName?: string;
 }) {
+  const [confirm, setConfirm] = useState(false);
   const [values, setValues] = useState<RecordValues>(initial ?? {});
 
   useEffect(() => {
@@ -221,6 +238,29 @@ export function RecordDialog({
                     ))}
                   </select>
                 )}
+                {type === "multiselect" && (
+                  <div className="flex flex-wrap gap-2">
+                    {options.map((o) => {
+                      const list = Array.isArray(value) ? (value as string[]) : [];
+                      const on = list.includes(o.value);
+                      return (
+                        <button
+                          key={o.value}
+                          type="button"
+                          onClick={() =>
+                            set(
+                              f.name,
+                              on ? list.filter((x) => x !== o.value) : [...list, o.value],
+                            )
+                          }
+                          className={`rounded-sm border px-2 py-1 text-xs ${on ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-muted-foreground"}`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {type === "checkbox" && (
                   <div className="flex h-9 items-center">
                     <Checkbox
@@ -253,6 +293,16 @@ export function RecordDialog({
           })}
 
           <DialogFooter className="sm:col-span-2">
+            {onDelete && (
+              <Button
+                type="button"
+                variant="outline"
+                className="mr-auto border-overdue/40 text-overdue hover:bg-overdue/10"
+                onClick={() => setConfirm(true)}
+              >
+                <Trash2 className="size-4" /> Delete
+              </Button>
+            )}
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
@@ -262,6 +312,92 @@ export function RecordDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {onDelete && (
+        <ConfirmDelete
+          open={confirm}
+          onOpenChange={setConfirm}
+          name={deleteName ?? "this record"}
+          onConfirm={() => {
+            setConfirm(false);
+            onDelete();
+          }}
+        />
+      )}
     </Dialog>
+  );
+}
+
+export function ConfirmDelete({
+  open,
+  onOpenChange,
+  name,
+  onConfirm,
+  pending,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  name: string;
+  onConfirm: () => void;
+  pending?: boolean;
+}) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete {name}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete {name}? This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={pending}
+            onClick={onConfirm}
+            className="bg-overdue text-white hover:bg-overdue/90"
+          >
+            {pending ? "Deleting…" : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function DeleteButton({
+  name,
+  onConfirm,
+  className = "",
+}: {
+  name: string;
+  onConfirm: () => void;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        aria-label={`Delete ${name}`}
+        className={`text-muted-foreground transition-colors hover:text-overdue ${className}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
+        <Trash2 className="size-4" />
+      </button>
+      <ConfirmDelete
+        open={open}
+        onOpenChange={setOpen}
+        name={name}
+        onConfirm={() => {
+          setOpen(false);
+          onConfirm();
+        }}
+      />
+    </>
   );
 }
