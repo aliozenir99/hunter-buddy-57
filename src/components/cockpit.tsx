@@ -282,6 +282,16 @@ export function RecordDialog({
           })}
 
           <DialogFooter className="sm:col-span-2">
+            {onDelete && (
+              <Button
+                type="button"
+                variant="outline"
+                className="mr-auto border-overdue/40 text-overdue hover:bg-overdue/10"
+                onClick={() => setConfirm(true)}
+              >
+                <Trash2 className="size-4" /> Delete
+              </Button>
+            )}
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
@@ -291,6 +301,92 @@ export function RecordDialog({
           </DialogFooter>
         </form>
       </DialogContent>
+
+      {onDelete && (
+        <ConfirmDelete
+          open={confirm}
+          onOpenChange={setConfirm}
+          name={deleteName ?? "this record"}
+          onConfirm={() => {
+            setConfirm(false);
+            onDelete();
+          }}
+        />
+      )}
     </Dialog>
+  );
+}
+
+export function ConfirmDelete({
+  open,
+  onOpenChange,
+  name,
+  onConfirm,
+  pending,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  name: string;
+  onConfirm: () => void;
+  pending?: boolean;
+}) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete {name}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete {name}? This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            disabled={pending}
+            onClick={onConfirm}
+            className="bg-overdue text-white hover:bg-overdue/90"
+          >
+            {pending ? "Deleting…" : "Delete"}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function DeleteButton({
+  name,
+  onConfirm,
+  className = "",
+}: {
+  name: string;
+  onConfirm: () => void;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        aria-label={`Delete ${name}`}
+        className={`text-muted-foreground transition-colors hover:text-overdue ${className}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setOpen(true);
+        }}
+      >
+        <Trash2 className="size-4" />
+      </button>
+      <ConfirmDelete
+        open={open}
+        onOpenChange={setOpen}
+        name={name}
+        onConfirm={() => {
+          setOpen(false);
+          onConfirm();
+        }}
+      />
+    </>
   );
 }
