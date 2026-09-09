@@ -126,6 +126,7 @@ export type FieldType =
   | "date"
   | "time"
   | "select"
+  | "multiselect"
   | "checkbox";
 
 export interface FieldSpec {
