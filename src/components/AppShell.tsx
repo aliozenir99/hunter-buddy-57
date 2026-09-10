@@ -58,6 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [name, setName] = useState("Hunter");
   const [searchOpen, setSearchOpen] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data: followUps = [] } = useFollowUps();
 
   const actionable = followUps.filter((f) => {
