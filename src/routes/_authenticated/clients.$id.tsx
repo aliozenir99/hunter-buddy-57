@@ -1,19 +1,40 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Empty, PageHeader, Panel, Pill, RecordDialog, Stat, type FieldSpec } from "@/components/cockpit";
 import {
+  DeleteButton,
+  Empty,
+  PageHeader,
+  Panel,
+  Pill,
+  RecordDialog,
+  Stat,
+  type FieldSpec,
+} from "@/components/cockpit";
+import {
+  useAccountManagers,
   useActivities,
   useCompanies,
   useContacts,
   useFollowUps,
   useMeetings,
   useOpportunities,
+  useRemove,
   useRequests,
   useUpsert,
+  type Contact,
 } from "@/lib/api";
-import { formatDate, formatLongDate, fullMoney } from "@/lib/crm";
+import {
+  COMPANY_STATUSES,
+  formatDate,
+  formatLongDate,
+  fullMoney,
+  INTEREST_OPTIONS,
+  LEVELS,
+  PRIORITIES,
+  RELATIONSHIP_STRENGTHS,
+} from "@/lib/crm";
 
 export const Route = createFileRoute("/_authenticated/clients/$id")({
   head: () => ({
@@ -36,8 +57,15 @@ function ClientDetail() {
   const { data: opportunities = [] } = useOpportunities();
   const { data: followUps = [] } = useFollowUps();
   const { data: activities = [] } = useActivities();
+  const { data: managers = [] } = useAccountManagers();
   const saveContact = useUpsert("contacts", "Contact saved");
+  const saveCompany = useUpsert("companies", "Client saved");
+  const removeContact = useRemove("contacts");
+  const removeCompany = useRemove("companies");
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [companyOpen, setCompanyOpen] = useState(false);
 
   const company = companies.find((c) => c.id === id);
   if (!company) return <Empty label="Client not found." />;
@@ -61,15 +89,58 @@ function ClientDetail() {
     { name: "notes", label: "Notes", type: "textarea" },
   ];
 
+  const companyFields: FieldSpec[] = [
+    { name: "name", label: "Company name", required: true },
+    { name: "industry", label: "Industry" },
+    { name: "company_type", label: "Type" },
+    { name: "website", label: "Website" },
+    { name: "city", label: "City" },
+    { name: "country", label: "Country" },
+    { name: "status", label: "Status", type: "select", options: COMPANY_STATUSES },
+    { name: "priority", label: "Priority", type: "select", options: PRIORITIES },
+    { name: "lead_source", label: "Lead source" },
+    { name: "potential_value", label: "Potential value", type: "number" },
+    {
+      name: "relationship_strength",
+      label: "Relationship",
+      type: "select",
+      options: RELATIONSHIP_STRENGTHS,
+    },
+    { name: "business_potential", label: "Business potential", type: "select", options: LEVELS },
+    { name: "engagement", label: "Engagement", type: "select", options: LEVELS },
+    {
+      name: "account_manager_id",
+      label: "Account manager",
+      type: "select",
+      options: managers.map((m) => ({ value: m.id, label: m.name })),
+    },
+    { name: "interests", label: "Interests", type: "multiselect", options: INTEREST_OPTIONS, full: true },
+    { name: "next_action", label: "Next action", full: true },
+    { name: "important_notes", label: "Notes", type: "textarea" },
+  ];
+
   return (
     <>
       <PageHeader
         title={company.name}
         subtitle={[company.industry, company.city, company.country].filter(Boolean).join(" · ")}
         action={
-          <Link to="/clients" className="text-sm text-primary hover:underline">
-            ← All clients
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to="/clients" className="text-sm text-primary hover:underline">
+              ← All clients
+            </Link>
+            <Button size="sm" variant="outline" onClick={() => setCompanyOpen(true)}>
+              <Pencil className="size-3.5" /> Edit
+            </Button>
+            <DeleteButton
+              name={company.name}
+              onConfirm={() =>
+                removeCompany.mutate(company.id, {
+                  onSuccess: () => navigate({ to: "/clients" }),
+                })
+              }
+            />
+          </div>
         }
       />
 
@@ -84,7 +155,15 @@ function ClientDetail() {
         <Panel
           title="Contacts"
           action={
-            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setOpen(true)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs"
+              onClick={() => {
+                setEditingContact(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="size-3.5" /> Add
             </Button>
           }
@@ -99,6 +178,23 @@ function ClientDetail() {
                     <span className="font-medium">{c.full_name}</span>
                     {c.is_decision_maker && <Pill tone="primary">DM</Pill>}
                     {c.is_influencer && <Pill>Influencer</Pill>}
+                    <div className="ml-auto flex items-center gap-1">
+                      <button
+                        type="button"
+                        aria-label={`Edit ${c.full_name}`}
+                        className="rounded-sm p-1 text-muted-foreground hover:text-primary"
+                        onClick={() => {
+                          setEditingContact(c);
+                          setOpen(true);
+                        }}
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                      <DeleteButton
+                        name={c.full_name}
+                        onConfirm={() => removeContact.mutate(c.id)}
+                      />
+                    </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {[c.position, c.phone, c.email].filter(Boolean).join(" · ") || "—"}
@@ -216,12 +312,37 @@ function ClientDetail() {
       <RecordDialog
         open={open}
         onOpenChange={setOpen}
-        title="New contact"
+        title={editingContact ? "Edit contact" : "New contact"}
         fields={contactFields}
-        initial={{ company_id: id }}
+        initial={
+          (editingContact as unknown as Record<string, unknown>) ?? { company_id: id }
+        }
         pending={saveContact.isPending}
         onSubmit={(v) =>
           saveContact.mutate({ ...v, company_id: id }, { onSuccess: () => setOpen(false) })
+        }
+        deleteName={editingContact?.full_name}
+        onDelete={
+          editingContact
+            ? () =>
+                removeContact.mutate(editingContact.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
+      />
+
+      <RecordDialog
+        open={companyOpen}
+        onOpenChange={setCompanyOpen}
+        title="Edit client"
+        fields={companyFields}
+        initial={company as unknown as Record<string, unknown>}
+        pending={saveCompany.isPending}
+        onSubmit={(v) =>
+          saveCompany.mutate({ ...v, id: company.id }, { onSuccess: () => setCompanyOpen(false) })
+        }
+        deleteName={company.name}
+        onDelete={() =>
+          removeCompany.mutate(company.id, { onSuccess: () => navigate({ to: "/clients" }) })
         }
       />
     </>
