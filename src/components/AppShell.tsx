@@ -23,6 +23,7 @@ import {
   Search,
   LogOut,
   Plus,
+  Menu,
 } from "lucide-react";
 
 const WORKSPACE = [
