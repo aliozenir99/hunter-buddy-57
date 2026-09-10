@@ -40,6 +40,7 @@ function Opportunities() {
   const { data: contacts = [] } = useContacts();
   const { data: managers = [] } = useAccountManagers();
   const save = useUpsert("opportunities", "Opportunity saved");
+  const remove = useRemove("opportunities");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Opportunity | null>(null);
 
@@ -161,6 +162,12 @@ function Opportunities() {
         }
         pending={save.isPending}
         onSubmit={(v) => save.mutate(v, { onSuccess: () => setOpen(false) })}
+        deleteName={editing?.name}
+        onDelete={
+          editing
+            ? () => remove.mutate(editing.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
       />
     </>
   );

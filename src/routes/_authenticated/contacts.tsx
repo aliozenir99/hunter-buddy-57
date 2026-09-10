@@ -1,10 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Empty, PageHeader, Panel, Pill, RecordDialog, type FieldSpec } from "@/components/cockpit";
-import { useCompanies, useContacts, useUpsert } from "@/lib/api";
+import {
+  DeleteButton,
+  Empty,
+  PageHeader,
+  Panel,
+  Pill,
+  RecordDialog,
+  type FieldSpec,
+} from "@/components/cockpit";
+import { useCompanies, useContacts, useRemove, useUpsert, type Contact } from "@/lib/api";
 
 export const Route = createFileRoute("/_authenticated/contacts")({
   head: () => ({
@@ -22,7 +30,9 @@ function Contacts() {
   const { data: contacts = [] } = useContacts();
   const { data: companies = [] } = useCompanies();
   const save = useUpsert("contacts", "Contact saved");
+  const remove = useRemove("contacts");
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Contact | null>(null);
   const [q, setQ] = useState("");
 
   const companyName = (id: string) => companies.find((c) => c.id === id)?.name ?? "—";
@@ -57,7 +67,13 @@ function Contacts() {
         title="Contacts"
         subtitle={`${contacts.length} people`}
         action={
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditing(null);
+              setOpen(true);
+            }}
+          >
             <Plus className="size-4" /> New contact
           </Button>
         }
@@ -94,6 +110,18 @@ function Contacts() {
                 >
                   {companyName(c.company_id)}
                 </Link>
+                <button
+                  type="button"
+                  aria-label={`Edit ${c.full_name}`}
+                  className="rounded-sm p-1 text-muted-foreground hover:text-primary"
+                  onClick={() => {
+                    setEditing(c);
+                    setOpen(true);
+                  }}
+                >
+                  <Pencil className="size-3.5" />
+                </button>
+                <DeleteButton name={c.full_name} onConfirm={() => remove.mutate(c.id)} />
               </li>
             ))}
           </ul>
@@ -103,10 +131,17 @@ function Contacts() {
       <RecordDialog
         open={open}
         onOpenChange={setOpen}
-        title="New contact"
+        title={editing ? "Edit contact" : "New contact"}
         fields={fields}
+        initial={(editing as unknown as Record<string, unknown>) ?? {}}
         pending={save.isPending}
         onSubmit={(v) => save.mutate(v, { onSuccess: () => setOpen(false) })}
+        deleteName={editing?.full_name}
+        onDelete={
+          editing
+            ? () => remove.mutate(editing.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
       />
     </>
   );
