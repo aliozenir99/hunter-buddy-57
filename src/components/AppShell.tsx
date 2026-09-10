@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { QuickCapture } from "@/components/QuickCapture";
 import { useFollowUps } from "@/lib/api";
@@ -22,6 +23,7 @@ import {
   Search,
   LogOut,
   Plus,
+  Menu,
 } from "lucide-react";
 
 const WORKSPACE = [
@@ -56,6 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [name, setName] = useState("Hunter");
   const [searchOpen, setSearchOpen] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data: followUps = [] } = useFollowUps();
 
   const actionable = followUps.filter((f) => {
