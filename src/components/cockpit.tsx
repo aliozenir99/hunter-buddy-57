@@ -171,8 +171,8 @@ export function RecordDialog({
   initial?: RecordValues;
   onSubmit: (values: RecordValues) => void;
   pending?: boolean;
-  onDelete?: () => void;
-  deleteName?: string;
+  onDelete?: (() => void) | undefined;
+  deleteName?: string | undefined;
 }) {
   const [confirm, setConfirm] = useState(false);
   const [values, setValues] = useState<RecordValues>(initial ?? {});

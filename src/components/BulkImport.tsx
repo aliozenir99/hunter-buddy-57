@@ -75,7 +75,9 @@ function normaliseDate(v: string | null) {
   if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
   const m = s.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);
   if (m) {
-    const [, d, mo, y] = m;
+    const d = m[1] ?? "";
+    const mo = m[2] ?? "";
+    const y = m[3] ?? "";
     const year = y.length === 2 ? `20${y}` : y;
     return `${year}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`;
   }
@@ -89,8 +91,9 @@ export function parseImport(text: string): ImportRow[] {
     .map((l) => l.trim())
     .filter(Boolean);
   if (lines.length === 0) return [];
-  const delim = lines[0].includes("\t") ? "\t" : lines[0].includes(";") ? ";" : ",";
-  const header = splitLine(lines[0], delim).map((h) => h.toLowerCase().replace(/[_]/g, " "));
+  const first = lines[0] ?? "";
+  const delim = first.includes("\t") ? "\t" : first.includes(";") ? ";" : ",";
+  const header = splitLine(first, delim).map((h) => h.toLowerCase().replace(/[_]/g, " "));
 
   const index: Partial<Record<keyof Omit<ImportRow, "valid">, number>> = {};
   (Object.keys(ALIASES) as (keyof typeof ALIASES)[]).forEach((key) => {
