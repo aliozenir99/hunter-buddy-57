@@ -1,10 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Empty, PageHeader, Panel, Pill, RecordDialog, type FieldSpec } from "@/components/cockpit";
-import { useAccountManagers, useCompanies, useUpsert } from "@/lib/api";
+import {
+  DeleteButton,
+  Empty,
+  PageHeader,
+  Panel,
+  Pill,
+  RecordDialog,
+  type FieldSpec,
+} from "@/components/cockpit";
+import { BulkImportDialog } from "@/components/BulkImport";
+import { useAccountManagers, useCompanies, useRemove, useUpsert, type Company } from "@/lib/api";
 import {
   COLD_DAYS,
   COMPANY_STATUSES,
@@ -31,7 +40,10 @@ function Clients() {
   const { data: companies = [] } = useCompanies();
   const { data: managers = [] } = useAccountManagers();
   const save = useUpsert("companies", "Client saved");
+  const remove = useRemove("companies");
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<Company | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
 
@@ -76,9 +88,20 @@ function Clients() {
         title="Clients"
         subtitle={`${companies.length} companies tracked`}
         action={
-          <Button size="sm" onClick={() => setOpen(true)}>
-            <Plus className="size-4" /> New client
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => setImportOpen(true)}>
+              <Upload className="size-4" /> Bulk import
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditing(null);
+                setOpen(true);
+              }}
+            >
+              <Plus className="size-4" /> New client
+            </Button>
+          </div>
         }
       />
 
@@ -114,6 +137,7 @@ function Clients() {
                   <th className="py-2 pr-3">Priority</th>
                   <th className="py-2 pr-3">Potential</th>
                   <th className="py-2 pr-3">Last contact</th>
+                  <th className="py-2 pr-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -149,6 +173,22 @@ function Clients() {
                           {d === null ? "never" : `${d}d ago`}
                         </span>
                       </td>
+                      <td className="py-2 pr-1">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            aria-label={`Edit ${c.name}`}
+                            className="rounded-sm p-1 text-muted-foreground hover:text-primary"
+                            onClick={() => {
+                              setEditing(c);
+                              setOpen(true);
+                            }}
+                          >
+                            <Pencil className="size-3.5" />
+                          </button>
+                          <DeleteButton name={c.name} onConfirm={() => remove.mutate(c.id)} />
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -161,12 +201,25 @@ function Clients() {
       <RecordDialog
         open={open}
         onOpenChange={setOpen}
-        title="New client"
+        title={editing ? "Edit client" : "New client"}
         fields={fields}
-        initial={{ status: "Lead", priority: "Medium" }}
+        initial={
+          (editing as unknown as Record<string, unknown>) ?? {
+            status: "Lead",
+            priority: "Medium",
+          }
+        }
         pending={save.isPending}
         onSubmit={(v) => save.mutate(v, { onSuccess: () => setOpen(false) })}
+        deleteName={editing?.name}
+        onDelete={
+          editing
+            ? () => remove.mutate(editing.id, { onSuccess: () => setOpen(false) })
+            : undefined
+        }
       />
+
+      <BulkImportDialog open={importOpen} onOpenChange={setImportOpen} />
     </>
   );
 }
