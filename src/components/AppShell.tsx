@@ -2,6 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { QuickCapture } from "@/components/QuickCapture";
 import { useFollowUps } from "@/lib/api";
